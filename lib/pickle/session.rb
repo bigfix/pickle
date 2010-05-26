@@ -52,6 +52,7 @@ module Pickle
     end
     
     def find_models(factory, fields = nil)
+      factory, name = *parse_model(factory)
       models_by_index(factory).clear
       model_class = pickle_config.factories[factory].klass
       records = model_class.find(:all, :conditions => convert_models_to_attributes(model_class, parse_fields(fields)))

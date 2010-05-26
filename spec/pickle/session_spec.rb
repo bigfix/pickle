@@ -423,4 +423,25 @@ describe Pickle::Session do
   it "#created_model!('unknown') should raise informative error message" do
     lambda { created_model!('unknown') }.should raise_error("Can't find pickle model: 'unknown' in this scenario")
   end
+
+  describe "namespaced models" do
+    before do
+      config.stub(:factories).and_return('namespaced_user' => user_factory)
+    end
+
+    it "should work with #create_model" do
+      user_factory.should_receive(:create).and_return(user)
+      create_model('a namespaced user')
+    end
+
+    it "should work with #find_model" do
+      user_class.should_receive(:find).with(:first, :conditions => {}).and_return(user)
+      find_model('a namespaced user')
+    end
+
+    it "should work with #find_models" do
+      user_class.should_receive(:find).with(:all, :conditions => {}).and_return([])
+      find_models('namespaced user')
+    end
+  end
 end
