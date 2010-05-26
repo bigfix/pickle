@@ -27,7 +27,11 @@ module Pickle
       record = pickle_config.factories[factory].create(fields)
       store_model(factory, label, record)
     end
-    
+
+    def create_models(count, plural_factory, fields = nil)
+      count.times { create_model(plural_factory.singularize, fields) }
+    end
+
     # if a column exists in the table which matches the singular factory name, this is used as the pickle ref
     def create_models_from_table(plural_factory, table)
       factory = plural_factory.singularize
@@ -51,8 +55,8 @@ module Pickle
       find_model(a_model_name, fields) or raise "Can't find pickle model: '#{a_model_name}' in this scenario"
     end
     
-    def find_models(factory, fields = nil)
-      factory, name = *parse_model(factory)
+    def find_models(plural_factory, fields = nil)
+      factory, name = *parse_model(plural_factory.singularize)
       models_by_index(factory).clear
       model_class = pickle_config.factories[factory].klass
       records = model_class.find(:all, :conditions => convert_models_to_attributes(model_class, parse_fields(fields)))

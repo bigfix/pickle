@@ -178,6 +178,13 @@ describe Pickle::Session do
     end
   end
 
+  describe "#create_models" do
+    it "should call create_model n times" do
+      should_receive(:create_model).exactly(5).times.with('user', {'foo' => 'bar'})
+      create_models(5, 'users', {'foo' => 'bar'})
+    end
+  end
+
   describe '#find_model' do
     before do
       user_class.stub!(:find).and_return(user)
@@ -434,6 +441,11 @@ describe Pickle::Session do
       create_model('a namespaced user')
     end
 
+    it "should work with #create_models" do
+      user_factory.should_receive(:create).twice.and_return(user)
+      create_models(2, 'namespaced users')
+    end
+
     it "should work with #find_model" do
       user_class.should_receive(:find).with(:first, :conditions => {}).and_return(user)
       find_model('a namespaced user')
@@ -441,7 +453,7 @@ describe Pickle::Session do
 
     it "should work with #find_models" do
       user_class.should_receive(:find).with(:all, :conditions => {}).and_return([])
-      find_models('namespaced user')
+      find_models('namespaced users')
     end
   end
 end
